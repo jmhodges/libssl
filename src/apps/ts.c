@@ -103,7 +103,7 @@ static TS_RESP *read_PKCS7(BIO *in_bio);
 static TS_RESP *create_response(CONF *conf, const char *section, char *engine,
 				char *queryfile, char *passin, char *inkey,
 				char *signer, char *chain, const char *policy);
-static ASN1_INTEGER * MS_CALLBACK serial_cb(TS_RESP_CTX *ctx, void *data);
+static ASN1_INTEGER * serial_cb(TS_RESP_CTX *ctx, void *data);
 static ASN1_INTEGER *next_serial(const char *serialfile);
 static int save_ts_serial(const char *serialfile, ASN1_INTEGER *serial);
 
@@ -116,7 +116,7 @@ static TS_VERIFY_CTX *create_verify_ctx(char *data, char *digest,
 					char *ca_path, char *ca_file,
 					char *untrusted);
 static X509_STORE *create_cert_store(char *ca_path, char *ca_file);
-static int MS_CALLBACK verify_cb(int ok, X509_STORE_CTX *ctx);
+static int verify_cb(int ok, X509_STORE_CTX *ctx);
 
 /* Main function definition. */
 int MAIN(int, char **);
@@ -164,6 +164,9 @@ int MAIN(int argc, char **argv)
 		free_bio_err = 1;
 		BIO_set_fp(bio_err, stderr, BIO_NOCLOSE | BIO_FP_TEXT);
 		}
+
+	if (!load_config(bio_err, NULL))
+		goto cleanup;
 
 	for (argc--, argv++; argc > 0; argc--, argv++)
 		{
@@ -646,7 +649,7 @@ static ASN1_INTEGER *create_nonce(int bits)
 
 	/* Generating random byte sequence. */
 	if (len > (int)sizeof(buf)) goto err;
-	if (!RAND_bytes(buf, len)) goto err;
+	if (RAND_bytes(buf, len) <= 0) goto err;
 
 	/* Find the first non-zero byte and creating ASN1_INTEGER object. */
 	for (i = 0; i < len && !buf[i]; ++i);
@@ -872,7 +875,7 @@ static TS_RESP *create_response(CONF *conf, const char *section, char *engine,
 	return response;
 	}
 
-static ASN1_INTEGER * MS_CALLBACK serial_cb(TS_RESP_CTX *ctx, void *data)
+static ASN1_INTEGER * serial_cb(TS_RESP_CTX *ctx, void *data)
 	{
 	const char *serial_file = (const char *) data;
 	ASN1_INTEGER *serial = next_serial(serial_file);
@@ -1080,7 +1083,7 @@ static X509_STORE *create_cert_store(char *ca_path, char *ca_file)
 	cert_ctx = X509_STORE_new();
 
 	/* Setting the callback for certificate chain verification. */
-	X509_STORE_set_verify_cb_func(cert_ctx, verify_cb);
+	X509_STORE_set_verify_cb(cert_ctx, verify_cb);
 
 	/* Adding a trusted certificate directory source. */
 	if (ca_path)
@@ -1124,7 +1127,7 @@ static X509_STORE *create_cert_store(char *ca_path, char *ca_file)
 	return NULL;
 	}
 
-static int MS_CALLBACK verify_cb(int ok, X509_STORE_CTX *ctx)
+static int verify_cb(int ok, X509_STORE_CTX *ctx)
 	{
 	/*
 	char buf[256];
