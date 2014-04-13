@@ -60,7 +60,6 @@
 #define HEADER_TS_H
 
 #include <openssl/opensslconf.h>
-#include <openssl/symhacks.h>
 #ifndef OPENSSL_NO_BUFFER
 #include <openssl/buffer.h>
 #endif
@@ -85,9 +84,6 @@
 #ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
 #endif
-
-#include <openssl/evp.h>
-
 
 #ifdef  __cplusplus
 extern "C" {
