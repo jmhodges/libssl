@@ -74,14 +74,3 @@ clean:
 	rm -f *.o *.obj lib tags core .pure .nfs* *.old *.bak fluff
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
-seed.o: ../../include/openssl/e_os2.h ../../include/openssl/opensslconf.h
-seed.o: ../../include/openssl/seed.h seed.c seed_locl.h
-seed_cbc.o: ../../include/openssl/e_os2.h ../../include/openssl/opensslconf.h
-seed_cbc.o: ../../include/openssl/seed.h seed_cbc.c seed_locl.h
-seed_cfb.o: ../../include/openssl/e_os2.h ../../include/openssl/opensslconf.h
-seed_cfb.o: ../../include/openssl/seed.h seed_cfb.c seed_locl.h
-seed_ecb.o: ../../include/openssl/opensslconf.h ../../include/openssl/seed.h
-seed_ecb.o: seed_ecb.c
-seed_ofb.o: ../../include/openssl/e_os2.h ../../include/openssl/opensslconf.h
-seed_ofb.o: ../../include/openssl/seed.h seed_locl.h seed_ofb.c

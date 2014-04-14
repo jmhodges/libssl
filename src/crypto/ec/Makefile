@@ -7,11 +7,6 @@ TOP=	../..
 CC=	cc
 INCLUDES= -I.. -I$(TOP) -I../../include
 CFLAG=-g
-INSTALL_PREFIX=
-OPENSSLDIR=     /usr/local/ssl
-INSTALLTOP=/usr/local/ssl
-MAKEDEPPROG=	makedepend
-MAKEDEPEND=	$(TOP)/util/domd $(TOP) -MD $(MAKEDEPPROG)
 MAKEFILE=	Makefile
 AR=		ar r
 
@@ -22,11 +17,17 @@ TEST=ectest.c
 APPS=
 
 LIB=$(TOP)/libcrypto.a
-LIBSRC=	ec_lib.c ecp_smpl.c ecp_mont.c ecp_recp.c ecp_nist.c ec_cvt.c ec_mult.c \
-	ec_err.c
+LIBSRC=	ec_lib.c ecp_smpl.c ecp_mont.c ecp_nist.c ec_cvt.c ec_mult.c\
+	ec_err.c ec_curve.c ec_check.c ec_print.c ec_asn1.c ec_key.c\
+	ec2_smpl.c ec2_mult.c ec_ameth.c ec_pmeth.c eck_prn.c \
+	ecp_nistp224.c ecp_nistp256.c ecp_nistp521.c ecp_nistputil.c \
+	ecp_oct.c ec2_oct.c ec_oct.c
 
-LIBOBJ=	ec_lib.o ecp_smpl.o ecp_mont.o ecp_recp.o ecp_nist.o ec_cvt.o ec_mult.o \
-	ec_err.o
+LIBOBJ=	ec_lib.o ecp_smpl.o ecp_mont.o ecp_nist.o ec_cvt.o ec_mult.o\
+	ec_err.o ec_curve.o ec_check.o ec_print.o ec_asn1.o ec_key.o\
+	ec2_smpl.o ec2_mult.o ec_ameth.o ec_pmeth.o eck_prn.o \
+	ecp_nistp224.o ecp_nistp256.o ecp_nistp521.o ecp_nistputil.o \
+	ecp_oct.o ec2_oct.o ec_oct.o
 
 SRC= $(LIBSRC)
 
@@ -54,6 +55,7 @@ links:
 	@$(PERL) $(TOP)/util/mklink.pl ../../apps $(APPS)
 
 install:
+	@[ -n "$(INSTALLTOP)" ] # should be set by top Makefile...
 	@headerlist="$(EXHEADER)"; for i in $$headerlist ; \
 	do  \
 	(cp $$i $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i; \
@@ -69,6 +71,7 @@ lint:
 	lint -DLINT $(INCLUDES) $(SRC)>fluff
 
 depend:
+	@[ -n "$(MAKEDEPEND)" ] # should be set by upper Makefile...
 	$(MAKEDEPEND) -- $(CFLAG) $(INCLUDES) $(DEPFLAG) -- $(PROGS) $(LIBSRC)
 
 dclean:
@@ -79,48 +82,3 @@ clean:
 	rm -f *.o */*.o *.obj lib tags core .pure .nfs* *.old *.bak fluff
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
-ec_cvt.o: ../../include/openssl/bn.h ../../include/openssl/e_os2.h
-ec_cvt.o: ../../include/openssl/ec.h ../../include/openssl/opensslconf.h
-ec_cvt.o: ../../include/openssl/symhacks.h ec_cvt.c ec_lcl.h
-ec_err.o: ../../include/openssl/bio.h ../../include/openssl/bn.h
-ec_err.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
-ec_err.o: ../../include/openssl/ec.h ../../include/openssl/err.h
-ec_err.o: ../../include/openssl/lhash.h ../../include/openssl/opensslconf.h
-ec_err.o: ../../include/openssl/opensslv.h ../../include/openssl/safestack.h
-ec_err.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-ec_err.o: ec_err.c
-ec_lib.o: ../../include/openssl/bio.h ../../include/openssl/bn.h
-ec_lib.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
-ec_lib.o: ../../include/openssl/ec.h ../../include/openssl/err.h
-ec_lib.o: ../../include/openssl/lhash.h ../../include/openssl/opensslconf.h
-ec_lib.o: ../../include/openssl/opensslv.h ../../include/openssl/safestack.h
-ec_lib.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-ec_lib.o: ec_lcl.h ec_lib.c
-ec_mult.o: ../../include/openssl/bio.h ../../include/openssl/bn.h
-ec_mult.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
-ec_mult.o: ../../include/openssl/ec.h ../../include/openssl/err.h
-ec_mult.o: ../../include/openssl/lhash.h ../../include/openssl/opensslconf.h
-ec_mult.o: ../../include/openssl/opensslv.h ../../include/openssl/safestack.h
-ec_mult.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-ec_mult.o: ec_lcl.h ec_mult.c
-ecp_mont.o: ../../include/openssl/bio.h ../../include/openssl/bn.h
-ecp_mont.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
-ecp_mont.o: ../../include/openssl/ec.h ../../include/openssl/err.h
-ecp_mont.o: ../../include/openssl/lhash.h ../../include/openssl/opensslconf.h
-ecp_mont.o: ../../include/openssl/opensslv.h ../../include/openssl/safestack.h
-ecp_mont.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-ecp_mont.o: ec_lcl.h ecp_mont.c
-ecp_nist.o: ../../include/openssl/bn.h ../../include/openssl/e_os2.h
-ecp_nist.o: ../../include/openssl/ec.h ../../include/openssl/opensslconf.h
-ecp_nist.o: ../../include/openssl/symhacks.h ec_lcl.h ecp_nist.c
-ecp_recp.o: ../../include/openssl/bn.h ../../include/openssl/e_os2.h
-ecp_recp.o: ../../include/openssl/ec.h ../../include/openssl/opensslconf.h
-ecp_recp.o: ../../include/openssl/symhacks.h ec_lcl.h ecp_recp.c
-ecp_smpl.o: ../../include/openssl/bio.h ../../include/openssl/bn.h
-ecp_smpl.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
-ecp_smpl.o: ../../include/openssl/ec.h ../../include/openssl/err.h
-ecp_smpl.o: ../../include/openssl/lhash.h ../../include/openssl/opensslconf.h
-ecp_smpl.o: ../../include/openssl/opensslv.h ../../include/openssl/safestack.h
-ecp_smpl.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-ecp_smpl.o: ec_lcl.h ecp_smpl.c
