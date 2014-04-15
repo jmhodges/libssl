@@ -230,11 +230,15 @@ static unsigned int psk_client_cb(SSL *ssl, const char *hint, char *identity,
 	unsigned int max_psk_len)
 	{
 	unsigned int psk_len = 0;
+	size_t maxlen = 0;
 	int ret;
         BIGNUM *bn=NULL;
 
 	if (c_debug)
 		BIO_printf(bio_c_out, "psk_client_cb\n");
+	if (max_identity_len > INT_MAX)
+		goto out_err;
+	maxlen = max_identity_len;
 	if (!hint)
                 {
                 /* no ServerKeyExchange message*/
@@ -245,8 +249,8 @@ static unsigned int psk_client_cb(SSL *ssl, const char *hint, char *identity,
 		BIO_printf(bio_c_out, "Received PSK identity hint '%s'\n", hint);
 
 	/* lookup PSK identity and PSK key based on the given identity hint here */
-	ret = BIO_snprintf(identity, max_identity_len, "%s", psk_identity);
-	if (ret < 0 || (unsigned int)ret > max_identity_len)
+	ret = snprintf(identity, maxlen, "%s", psk_identity);
+	if (ret == -1 || ret >= maxlen)
 		goto out_err;
 	if (c_debug)
 		BIO_printf(bio_c_out, "created identity '%s' len=%d\n", identity, ret);
@@ -1752,9 +1756,6 @@ SSL_set_tlsext_status_ids(con, ids);
 		else if (!ssl_pending && FD_ISSET(fileno(stdout),&writefds))
 #endif
 			{
-#ifdef CHARSET_EBCDIC
-			ascii2ebcdic(&(sbuf[sbuf_off]),&(sbuf[sbuf_off]),sbuf_len);
-#endif
 			i=raw_write_stdout(&(sbuf[sbuf_off]),sbuf_len);
 
 			if (i <= 0)
@@ -1885,9 +1886,6 @@ printf("read=%d pending=%d peek=%d\n",k,SSL_pending(con),SSL_peek(con,zbuf,10240
 				{
 				cbuf_len=i;
 				cbuf_off=0;
-#ifdef CHARSET_EBCDIC
-				ebcdic2ascii(cbuf, cbuf, i);
-#endif
 				}
 
 			write_ssl=1;
