@@ -88,9 +88,6 @@ This specifies how the points on the elliptic curve are converted
 into octet strings. Possible values are: B<compressed> (the default
 value), B<uncompressed> and B<hybrid>. For more information regarding
 the point conversion forms please read the X9.62 standard.
-B<Note> Due to patent issues the B<compressed> option is disabled
-by default for binary curves and can be enabled by defining
-the preprocessor macro B<OPENSSL_EC_BIN_PT_COMP> at compile time.
 
 =item B<-param_enc arg>
 
@@ -121,7 +118,7 @@ all others.
 
 =item B<-engine id>
 
-specifying an engine (by it's unique B<id> string) will cause B<req>
+specifying an engine (by its unique B<id> string) will cause B<ecparam>
 to attempt to obtain a functional reference to the specified engine,
 thus initialising it if needed. The engine will then be set as the default
 for all available algorithms.
