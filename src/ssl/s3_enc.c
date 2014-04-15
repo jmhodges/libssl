@@ -170,9 +170,6 @@ ssl3_generate_key_block(SSL *s, unsigned char *km, int num)
 	unsigned char c = 'A';
 	unsigned int i, j, k;
 
-#ifdef CHARSET_EBCDIC
-	c = os_toascii[c]; /*'A' in ASCII */
-#endif
 	k = 0;
 	EVP_MD_CTX_init(&m5);
 	EVP_MD_CTX_set_flags(&m5, EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
@@ -594,12 +591,6 @@ ssl3_digest_cached_records(SSL *s)
 	for (i = 0; ssl_get_handshake_digest(i, &mask, &md); i++) {
 		if ((mask & ssl_get_algorithm2(s)) && md) {
 			s->s3->handshake_dgst[i] = EVP_MD_CTX_create();
-#ifdef OPENSSL_FIPS
-			if (EVP_MD_nid(md) == NID_md5) {
-				EVP_MD_CTX_set_flags(s->s3->handshake_dgst[i],
-				EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
-			}
-#endif
 			EVP_DigestInit_ex(s->s3->handshake_dgst[i], md, NULL);
 			EVP_DigestUpdate(s->s3->handshake_dgst[i], hdata, hdatalen);
 		} else {
@@ -796,15 +787,9 @@ ssl3_generate_master_secret(SSL *s, unsigned char *out, unsigned char *p,
     int len)
 {
 	static const unsigned char *salt[3] = {
-#ifndef CHARSET_EBCDIC
 		(const unsigned char *)"A",
 		(const unsigned char *)"BB",
 		(const unsigned char *)"CCC",
-#else
-		(const unsigned char *)"\x41",
-		(const unsigned char *)"\x42\x42",
-		(const unsigned char *)"\x43\x43\x43",
-#endif
 	};
 	unsigned char buf[EVP_MAX_MD_SIZE];
 	EVP_MD_CTX ctx;
