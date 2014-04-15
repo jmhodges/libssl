@@ -77,13 +77,14 @@ void ECDSA_set_default_method(const ECDSA_METHOD *meth)
 const ECDSA_METHOD *ECDSA_get_default_method(void)
 {
 	if(!default_ECDSA_method) 
+		{
 		default_ECDSA_method = ECDSA_OpenSSL();
+		}
 	return default_ECDSA_method;
 }
 
 int ECDSA_set_method(EC_KEY *eckey, const ECDSA_METHOD *meth)
 {
-        const ECDSA_METHOD *mtmp;
 	ECDSA_DATA *ecdsa;
 
 	ecdsa = ecdsa_check(eckey);
@@ -91,7 +92,6 @@ int ECDSA_set_method(EC_KEY *eckey, const ECDSA_METHOD *meth)
 	if (ecdsa == NULL)
 		return 0;
 
-        mtmp = ecdsa->meth;
 #ifndef OPENSSL_NO_ENGINE
 	if (ecdsa->engine)
 	{
@@ -190,12 +190,18 @@ ECDSA_DATA *ecdsa_check(EC_KEY *key)
 		ecdsa_data = (ECDSA_DATA *)ecdsa_data_new();
 		if (ecdsa_data == NULL)
 			return NULL;
-		EC_KEY_insert_key_method_data(key, (void *)ecdsa_data,
-			ecdsa_data_dup, ecdsa_data_free, ecdsa_data_free);
+		data = EC_KEY_insert_key_method_data(key, (void *)ecdsa_data,
+			   ecdsa_data_dup, ecdsa_data_free, ecdsa_data_free);
+		if (data != NULL)
+			{
+			/* Another thread raced us to install the key_method
+			 * data and won. */
+			ecdsa_data_free(ecdsa_data);
+			ecdsa_data = (ECDSA_DATA *)data;
+			}
 	}
 	else
 		ecdsa_data = (ECDSA_DATA *)data;
-	
 
 	return ecdsa_data;
 }

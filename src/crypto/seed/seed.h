@@ -82,6 +82,8 @@
 #define HEADER_SEED_H
 
 #include <openssl/opensslconf.h>
+#include <openssl/e_os2.h>
+#include <openssl/crypto.h>
 
 #ifdef OPENSSL_NO_SEED
 #error SEED is disabled.
@@ -113,7 +115,6 @@ typedef struct seed_key_st {
     unsigned int data[32];
 #endif
 } SEED_KEY_SCHEDULE;
-
 
 void SEED_set_key(const unsigned char rawkey[SEED_KEY_LENGTH], SEED_KEY_SCHEDULE *ks);
 
