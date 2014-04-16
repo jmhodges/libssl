@@ -119,17 +119,17 @@ int MAIN(int argc, char **argv)
 		if (!strcmp(*argv,"-in"))
 			{
 			if (--argc < 1) badarg = 1;
-                        infile= *(++argv);
+                        else infile= *(++argv);
 			}
 		else if (!strcmp(*argv,"-out"))
 			{
 			if (--argc < 1) badarg = 1;
-			outfile= *(++argv);
+			else outfile= *(++argv);
 			}
 		else if (!strcmp(*argv,"-sigfile"))
 			{
 			if (--argc < 1) badarg = 1;
-			sigfile= *(++argv);
+			else sigfile= *(++argv);
 			}
 		else if(!strcmp(*argv, "-inkey"))
 			{
@@ -159,17 +159,17 @@ int MAIN(int argc, char **argv)
 		else if (!strcmp(*argv,"-passin"))
 			{
 			if (--argc < 1) badarg = 1;
-			passargin= *(++argv);
+			else passargin= *(++argv);
 			}
 		else if (strcmp(*argv,"-peerform") == 0)
 			{
 			if (--argc < 1) badarg = 1;
-			peerform=str2fmt(*(++argv));
+			else peerform=str2fmt(*(++argv));
 			}
 		else if (strcmp(*argv,"-keyform") == 0)
 			{
 			if (--argc < 1) badarg = 1;
-			keyform=str2fmt(*(++argv));
+			else keyform=str2fmt(*(++argv));
 			}
 #ifndef OPENSSL_NO_ENGINE
 		else if(!strcmp(*argv, "-engine"))
@@ -278,12 +278,6 @@ int MAIN(int argc, char **argv)
 	else
 		{
 		out = BIO_new_fp(stdout, BIO_NOCLOSE);
-#ifdef OPENSSL_SYS_VMS
-		{
-		    BIO *tmpbio = BIO_new(BIO_f_linebuffer());
-		    out = BIO_push(tmpbio, out);
-		}
-#endif
 	}
 
 	if (sigfile)
@@ -390,7 +384,7 @@ static void usage()
 	BIO_printf(bio_err, "Usage: pkeyutl [options]\n");
 	BIO_printf(bio_err, "-in file        input file\n");
 	BIO_printf(bio_err, "-out file       output file\n");
-	BIO_printf(bio_err, "-signature file signature file (verify operation only)\n");
+	BIO_printf(bio_err, "-sigfile file signature file (verify operation only)\n");
 	BIO_printf(bio_err, "-inkey file     input key\n");
 	BIO_printf(bio_err, "-keyform arg    private key format - default PEM\n");
 	BIO_printf(bio_err, "-pubin          input is a public key\n");
