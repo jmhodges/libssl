@@ -91,16 +91,6 @@ typedef struct DES_ks
 	} ks[16];
     } DES_key_schedule;
 
-#ifndef OPENSSL_DISABLE_OLD_DES_SUPPORT
-# ifndef OPENSSL_ENABLE_OLD_DES_SUPPORT
-#  define OPENSSL_ENABLE_OLD_DES_SUPPORT
-# endif
-#endif
-
-#ifdef OPENSSL_ENABLE_OLD_DES_SUPPORT
-# include <openssl/des_old.h>
-#endif
-
 #define DES_KEY_SZ 	(sizeof(DES_cblock))
 #define DES_SCHEDULE_SZ (sizeof(DES_key_schedule))
 
@@ -231,10 +221,6 @@ void DES_cfb64_encrypt(const unsigned char *in,unsigned char *out,long length,
 		       int enc);
 void DES_ofb64_encrypt(const unsigned char *in,unsigned char *out,long length,
 		       DES_key_schedule *schedule,DES_cblock *ivec,int *num);
-
-int DES_read_password(DES_cblock *key, const char *prompt, int verify);
-int DES_read_2passwords(DES_cblock *key1, DES_cblock *key2, const char *prompt,
-	int verify);
 
 #define DES_fixup_key_parity DES_set_odd_parity
 
